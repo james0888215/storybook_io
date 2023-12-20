@@ -194,9 +194,9 @@ function useSWEffect() {
 var import_react4 = require("@remix-run/react");
 var import_jsx_dev_runtime2 = require("react/jsx-dev-runtime"), meta = () => ({
   charset: "utf-8",
-  title: "vocabify",
+  title: "StoryBook.IO",
   viewport: "width=device-width,initial-scale=1",
-  description: "Personal AI-powered vocabulary teacher.",
+  description: "Personal AI-powered story teller.",
   "og:image": "https://vocabify.vercel.app/social.png"
 }), loader = async () => ({ ENV: getEnv() });
 function App() {
@@ -324,27 +324,33 @@ async function submitPrompt(word = "") {
   if (word = import_dompurify.default.sanitize(word), word.trim().length === 0)
     return Promise.reject({ message: "Please enter a valid word" });
   try {
-    return (await openai.chat.completions.create({
-      model: "text-davinci-003",
+    let completion = await openai.completions.create({
+      model: "gpt-3.5-turbo-instruct",
       prompt: generatePrompt(word),
-      temperature: 0.5,
-      max_tokens: 3e3
-    })).data.choices[0].text;
+      temperature: 0.6,
+      max_tokens: 400,
+      temperature: 0,
+      top_p: 1,
+      n: 1,
+      logprobs: null,
+      stop: "{}"
+    });
+    return console.log(completion), completion.choices[0].text;
   } catch (error) {
     return Promise.reject({ error });
   }
 }
 function generatePrompt(word) {
-  return `Define the word ${word}. Then give me an example of its use in a sentence. Use proper grammar and punctuation. 
+  return `Tell me a short 1 minute kids story with a girl named ${word}. ${word} is a girl and the story should be child friendly and have a happy ending. 
   
-  Return in json format like: {"definition": "<definition>", "example": "<example>"}`;
+  Return text format paragraphed with html syntax`;
 }
 
 // app/components/input.js
 var import_dompurify3 = __toESM(require("dompurify")), import_react_spinners = require("react-spinners");
 
 // app/components/response.js
-var import_dompurify2 = __toESM(require("dompurify")), import_react5 = require("react"), import_jsx_dev_runtime3 = require("react/jsx-dev-runtime");
+var import_dompurify2 = require("dompurify"), import_react5 = require("react"), import_jsx_dev_runtime3 = require("react/jsx-dev-runtime");
 function Response2({ query, data }) {
   let responseRef = (0, import_react5.useRef)();
   (0, import_react5.useEffect)(() => {
@@ -356,45 +362,22 @@ function Response2({ query, data }) {
     let regex = new RegExp(query2, "gi");
     return response.replace(regex, `<b>${query2}</b>`);
   }
-  return /* @__PURE__ */ (0, import_jsx_dev_runtime3.jsxDEV)("div", { className: "response", ref: responseRef, children: [
-    /* @__PURE__ */ (0, import_jsx_dev_runtime3.jsxDEV)(
-      "div",
-      {
-        dangerouslySetInnerHTML: {
-          __html: import_dompurify2.default.sanitize(boldQuery(query, data.definition))
-        }
-      },
-      void 0,
-      !1,
-      {
-        fileName: "app/components/response.js",
-        lineNumber: 24,
-        columnNumber: 7
-      },
-      this
-    ),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime3.jsxDEV)("br", {}, void 0, !1, {
+  return /* @__PURE__ */ (0, import_jsx_dev_runtime3.jsxDEV)("div", { className: "response", ref: responseRef, children: /* @__PURE__ */ (0, import_jsx_dev_runtime3.jsxDEV)(
+    "div",
+    {
+      dangerouslySetInnerHTML: {
+        __html: data
+      }
+    },
+    void 0,
+    !1,
+    {
       fileName: "app/components/response.js",
-      lineNumber: 29,
+      lineNumber: 24,
       columnNumber: 7
-    }, this),
-    /* @__PURE__ */ (0, import_jsx_dev_runtime3.jsxDEV)(
-      "div",
-      {
-        dangerouslySetInnerHTML: {
-          __html: `"${import_dompurify2.default.sanitize(boldQuery(query, data.example))}"`
-        }
-      },
-      void 0,
-      !1,
-      {
-        fileName: "app/components/response.js",
-        lineNumber: 30,
-        columnNumber: 7
-      },
-      this
-    )
-  ] }, void 0, !0, {
+    },
+    this
+  ) }, void 0, !1, {
     fileName: "app/components/response.js",
     lineNumber: 23,
     columnNumber: 5
@@ -411,8 +394,8 @@ function Input() {
   async function onSubmit(e) {
     e.preventDefault(), setResponse(""), setIsLoading(!0), setError("");
     try {
-      let response2 = await submitPrompt(speechInput), formattedResult = JSON.parse(response2.replace(/\n/g, ""));
-      setResponse(formattedResult), setIsLoading(!1);
+      let response2 = await submitPrompt(speechInput);
+      console.log(response2, "Response"), setResponse(response2), setIsLoading(!1);
     } catch (error2) {
       console.log(error2, "error"), setError(error2.message || genericError), setIsLoading(!1);
     }
@@ -425,27 +408,27 @@ function Input() {
       "Enter your childs name,",
       /* @__PURE__ */ (0, import_jsx_dev_runtime4.jsxDEV)("br", {}, void 0, !1, {
         fileName: "app/components/input.js",
-        lineNumber: 55,
+        lineNumber: 56,
         columnNumber: 9
       }, this),
       "and put them at the heart of a story \u{1F9B8}"
     ] }, void 0, !0, {
       fileName: "app/components/input.js",
-      lineNumber: 53,
+      lineNumber: 54,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ (0, import_jsx_dev_runtime4.jsxDEV)("form", { onSubmit, children: [
       /* @__PURE__ */ (0, import_jsx_dev_runtime4.jsxDEV)("div", { className: "buttons", children: /* @__PURE__ */ (0, import_jsx_dev_runtime4.jsxDEV)("div", { className: "button-container", children: /* @__PURE__ */ (0, import_jsx_dev_runtime4.jsxDEV)("button", { type: "button", tabIndex: "-1", onClick: reset, disabled: !speechInput, children: "Reset" }, void 0, !1, {
         fileName: "app/components/input.js",
-        lineNumber: 65,
+        lineNumber: 66,
         columnNumber: 13
       }, this) }, void 0, !1, {
         fileName: "app/components/input.js",
-        lineNumber: 64,
+        lineNumber: 65,
         columnNumber: 11
       }, this) }, void 0, !1, {
         fileName: "app/components/input.js",
-        lineNumber: 61,
+        lineNumber: 62,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ (0, import_jsx_dev_runtime4.jsxDEV)("div", { className: "input-container", children: [
@@ -463,7 +446,7 @@ function Input() {
           !1,
           {
             fileName: "app/components/input.js",
-            lineNumber: 73,
+            lineNumber: 74,
             columnNumber: 11
           },
           this
@@ -481,7 +464,7 @@ function Input() {
           !1,
           {
             fileName: "app/components/input.js",
-            lineNumber: 83,
+            lineNumber: 84,
             columnNumber: 11
           },
           this
@@ -498,34 +481,34 @@ function Input() {
           !1,
           {
             fileName: "app/components/input.js",
-            lineNumber: 94,
+            lineNumber: 95,
             columnNumber: 13
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "app/components/input.js",
-        lineNumber: 71,
+        lineNumber: 72,
         columnNumber: 9
       }, this)
     ] }, void 0, !0, {
       fileName: "app/components/input.js",
-      lineNumber: 60,
+      lineNumber: 61,
       columnNumber: 7
     }, this),
     isLoading && /* @__PURE__ */ (0, import_jsx_dev_runtime4.jsxDEV)(import_react_spinners.PropagateLoader, { color: "#005277", className: "loader" }, void 0, !1, {
       fileName: "app/components/input.js",
-      lineNumber: 105,
+      lineNumber: 106,
       columnNumber: 21
     }, this),
     response && /* @__PURE__ */ (0, import_jsx_dev_runtime4.jsxDEV)(Response2, { data: response, query }, void 0, !1, {
       fileName: "app/components/input.js",
-      lineNumber: 108,
+      lineNumber: 109,
       columnNumber: 20
     }, this)
   ] }, void 0, !0, {
     fileName: "app/components/input.js",
-    lineNumber: 52,
+    lineNumber: 53,
     columnNumber: 5
   }, this) : null;
 }
@@ -605,7 +588,7 @@ function Index() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-AVYK5Q2A.js", imports: ["/build/_shared/chunk-BTVYFQ75.js", "/build/_shared/chunk-JR7JHID7.js", "/build/_shared/chunk-4D7IJTTE.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-EWWHKASH.js", imports: void 0, hasAction: !1, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/index": { id: "routes/index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/index-LJGDNLZO.js", imports: void 0, hasAction: !1, hasLoader: !1, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/resources/manifest[.]webmanifest": { id: "routes/resources/manifest[.]webmanifest", parentId: "root", path: "resources/manifest.webmanifest", index: void 0, caseSensitive: void 0, module: "/build/routes/resources/manifest[.]webmanifest-LS3XA4HG.js", imports: void 0, hasAction: !1, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 } }, version: "fc97461a", hmr: void 0, url: "/build/manifest-FC97461A.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-AVYK5Q2A.js", imports: ["/build/_shared/chunk-BTVYFQ75.js", "/build/_shared/chunk-JR7JHID7.js", "/build/_shared/chunk-4D7IJTTE.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-2PDKSI3S.js", imports: void 0, hasAction: !1, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/index": { id: "routes/index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/index-GNO3ANWS.js", imports: void 0, hasAction: !1, hasLoader: !1, hasCatchBoundary: !1, hasErrorBoundary: !1 }, "routes/resources/manifest[.]webmanifest": { id: "routes/resources/manifest[.]webmanifest", parentId: "root", path: "resources/manifest.webmanifest", index: void 0, caseSensitive: void 0, module: "/build/routes/resources/manifest[.]webmanifest-LS3XA4HG.js", imports: void 0, hasAction: !1, hasLoader: !0, hasCatchBoundary: !1, hasErrorBoundary: !1 } }, version: "d1bddd8e", hmr: void 0, url: "/build/manifest-D1BDDD8E.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var assetsBuildDirectory = "public\\build", future = { v2_dev: !1, unstable_postcss: !1, unstable_tailwind: !1, v2_errorBoundary: !1, v2_headers: !1, v2_meta: !1, v2_normalizeFormMethod: !1, v2_routeConvention: !1 }, publicPath = "/build/", entry = { module: entry_server_exports }, routes = {

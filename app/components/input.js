@@ -28,8 +28,9 @@ function Input() {
     // submit openai prompt
     try {
       const response = await submitPrompt(speechInput);
-      const formattedResult = JSON.parse(response.replace(/\n/g, ""));
-      setResponse(formattedResult);
+      console.log(response, "Response")
+      // const formattedResult = JSON.parse(response.replace(/\n/g, ""));
+      setResponse(response);
       setIsLoading(false);
     } catch (error) {
       console.log(error, "error")

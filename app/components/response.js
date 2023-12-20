@@ -23,13 +23,7 @@ export default function Response({ query, data }) {
     <div className="response" ref={responseRef}>
       <div
         dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(boldQuery(query, data.definition)),
-        }}
-      ></div>
-      <br />
-      <div
-        dangerouslySetInnerHTML={{
-          __html: `"${DOMPurify.sanitize(boldQuery(query, data.example))}"`,
+          __html: data,
         }}
       ></div>
     </div>

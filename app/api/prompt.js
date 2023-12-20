@@ -23,14 +23,19 @@ export default async function submitPrompt(word = "") {
 
   // call openai api with input
   try {
-    const completion = await openai.chat.completions.create({
-      model: "text-davinci-003",
-      prompt: generatePrompt(word),
-      temperature: 0.5,
-      max_tokens: 3000,
+    const completion = await openai.completions.create({
+      model: "gpt-3.5-turbo-instruct",
+      prompt : generatePrompt(word),
+      temperature: 0.6,
+      max_tokens: 400,
+      temperature: 0,
+      top_p: 1,
+      n: 1,
+      logprobs: null,
+      stop: "{}"
     });
-
-    return completion.data.choices[0].text;
+    console.log(completion) 
+    return completion.choices[0].text;
   } catch (error) {
     return Promise.reject({ error });
   }
@@ -38,7 +43,7 @@ export default async function submitPrompt(word = "") {
 
 // generate prompt for openai with user input
 function generatePrompt(word) {
-  return `Define the word ${word}. Then give me an example of its use in a sentence. Use proper grammar and punctuation. 
+  return `Tell me a short 1 minute kids story with a girl named ${word}. ${word} is a girl and the story should be child friendly and have a happy ending. 
   
-  Return in json format like: {"definition": "<definition>", "example": "<example>"}`;
+  Return text format paragraphed with html syntax`;
 }
